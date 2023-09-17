@@ -7,7 +7,7 @@ const R = require("ramda");
 
 //   return map(book => book.title, selected)
 // }
-const books = [
+const data = [
   {
     title: "Shawshank Redemption",
     year: 1975
@@ -17,7 +17,7 @@ const books = [
     year: 1850
   },
   {
-    title: "The Feminine Mystiquie",
+    title: "The Feminine Mystique",
     year: 1975
   },
   {
@@ -25,11 +25,16 @@ const books = [
     year: 1960
   }
 ]
+const bookTitle = book => book.title;
+// used to have args in other order
+// const publishedInYear = R.curry((book, year) => book.year === year)
+const publishedInYear = R.curry((year, book) => book.year === year);
 
-function publishedInYear(year) {
-  return function (book) {
-    return book.year === year
-  }
+const titlesForYear = (books, year) => {
+  // publishedInYear is curried, so it will return a partial application if you pass partial arguments
+  const selected = R.filter(publishedInYear(year), books);
+  return R.map(bookTitle, selected);
 }
-const booksForYear = year => R.filter(publishedInYear(year), books);
-console.log( booksForYear(1975));
+const newFunction = R.partialRight(titlesForYear, [1975]);
+console.log(newFunction(data));
+
